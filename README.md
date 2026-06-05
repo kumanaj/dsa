@@ -6,7 +6,7 @@ C++17 Data Structures implementations with Google Test and CMake.
 
 | Data structure | Header                            | Key operations                     |
 |----------------|-----------------------------------|------------------------------------|
-| Linked List    | `src/data_structures/linked_list.hpp` | push_front, push_back, pop_front   |
+| List    | [ilist.hpp](./include/data_structures/ilist.hpp) | push_front, push_back, pop_front, pop_back   |
 
 
 
