@@ -13,10 +13,12 @@ C++17 Data Structures implementations with Google Test and CMake.
 ## Build & run tests
 
 ```bash
-cmake -B build -DBUILD_TESTS=ON
+cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DENABLE_ASAN=OFF
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+To enable address sanitzer, set ENABLE_ASAN=ON
 
 ## Requirements
 

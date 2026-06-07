@@ -1,35 +1,44 @@
 #include <gtest/gtest.h>
-#include "linked_list/linked_list.hpp"
+#include "data_structures/linked_list/singly_linked_list.hpp"
 
 TEST(LinkedListTest, StartsEmpty) {
-    LinkedList<int> l;
-    EXPECT_TRUE(l.empty());
-    EXPECT_EQ(l.size(), 0u);
+    SinglyLinkedList<int> list;
+    EXPECT_TRUE(list.is_empty());
+    EXPECT_EQ(list.get_size(), 0u);
 }
+
 TEST(LinkedListTest, PushFront) {
-    LinkedList<int> l;
-    l.push_front(10); l.push_front(20);
-    EXPECT_EQ(l.front(), 20);
-    EXPECT_EQ(l.size(), 2u);
+    SinglyLinkedList<int> list;
+    list.push_front(10);
+    list.push_front(20);
+    EXPECT_EQ(list.front(), 20);
+    EXPECT_EQ(list.get_size(), 2u);
 }
+
 TEST(LinkedListTest, PushBack) {
-    LinkedList<int> l;
-    l.push_back(1); l.push_back(2);
-    EXPECT_EQ(l.front(), 1);
+    SinglyLinkedList<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    EXPECT_EQ(list.front(), 1);
 }
+
 TEST(LinkedListTest, PopFront) {
-    LinkedList<int> l;
-    l.push_back(1); l.push_back(2);
-    l.pop_front();
-    EXPECT_EQ(l.front(), 2);
+    SinglyLinkedList<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    list.pop_front();
+    EXPECT_EQ(list.front(), 2);
 }
+
 TEST(LinkedListTest, PopThrowsOnEmpty) {
-    LinkedList<int> l;
-    EXPECT_THROW(l.pop_front(), std::underflow_error);
+    SinglyLinkedList<int> list;
+    EXPECT_THROW(list.pop_front(), std::underflow_error);
 }
+
 TEST(LinkedListTest, Clear) {
-    LinkedList<int> l;
-    l.push_back(1); l.push_back(2);
-    l.clear();
-    EXPECT_TRUE(l.empty());
+    SinglyLinkedList<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    list.clear();
+    EXPECT_TRUE(list.is_empty());
 }

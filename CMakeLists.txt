@@ -6,10 +6,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(BUILD_TESTS "Build tests" ON)
+option(ENABLE_ASAN "Enable AddressSanitizer" OFF)
 
 include(cmake/FetchGoogleTest.cmake)
 
 add_subdirectory(src)
+
+if(ENABLE_ASAN)
+    add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g -O0)
+    add_link_options(-fsanitize=address)
+endif()
 
 if(BUILD_TESTS)
     enable_testing()
