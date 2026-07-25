@@ -6,7 +6,7 @@ template <typename T>
 class SinglyLinkedList : public IList<T> {
 public:
     SinglyLinkedList() : IList<T>(), head(nullptr) { }
-     virtual ~SinglyLinkedList();
+    virtual ~SinglyLinkedList();
 
     virtual void push_front(const T item);
     virtual void push_back(const T item);
