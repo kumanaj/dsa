@@ -1,6 +1,7 @@
 add_executable(ds_tests
     data_structures/test_linked_list.cpp
     data_structures/test_linked_list_tailed.cpp
+    data_structures/test_doubly_linked_list.cpp
 )
 
 target_link_libraries(ds_tests PRIVATE data_structures GTest::gtest_main)
