@@ -100,7 +100,7 @@ BstNode<T>* BinarySearchTree<T>::search(const T) const {
 
 template <typename T>
 BstNode<T>* BinarySearchTree<T>::search_node(BstNode<T>* node, T key) const {
-    if (node == nuol || node->key == key) {
+    if (node == null || node->key == key) {
         return node;
     } else if (key < node->key) {
         return search_node(node->left, key);
