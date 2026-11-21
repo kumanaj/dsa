@@ -1,25 +1,44 @@
-#include "node.hpp"
-#include "data_structures/abstract/ilist.hpp"
+#pragma once
 
+#include <cassert>
+#include <cstddef>
+#include <optional>
+#include <stdexcept>
 
 template <typename T>
-class SinglyLinkedList : public IList<T> {
-public:
-    SinglyLinkedList() : IList<T>(), head(nullptr) { }
-    virtual ~SinglyLinkedList();
+struct Node {
+    T data;
+    Node* next;
 
-    virtual void push_front(const T item);
-    virtual void push_back(const T item);
-    virtual T pop_front();
-    virtual T pop_back();
-    virtual T& get(size_t index) const;
-    virtual T& operator[] (size_t index);
-    virtual std::optional<T> front() const;
-    virtual std::optional<T> back() const;
-    virtual void clear();
+    Node() : next(nullptr) {}
+    Node(const T& item) : data(item), next(nullptr) {} // We can also use std::move(item) here.
+};
+
+template <typename T>
+class SinglyLinkedList {
+public:
+    SinglyLinkedList() : head(nullptr), count(0) { }
+    ~SinglyLinkedList();
+
+    // Disable copying (the default copy would share nodes and double-free them)
+    SinglyLinkedList(const SinglyLinkedList<T>& other) = delete;
+    SinglyLinkedList& operator=(const SinglyLinkedList<T>& other) = delete;
+
+    size_t size() const { return count; }
+    bool empty() const { return count == 0; }
+
+    void push_front(const T item);
+    void push_back(const T item);
+    T pop_front();
+    T pop_back();
+    T& get(size_t index) const;
+    T& operator[] (size_t index);
+    std::optional<T> front() const;
+    std::optional<T> back() const;
+    void clear();
 protected:
     Node<T> *head;
-    using IList<T>::size;
+    size_t count;
 };
 
 template<typename T>
@@ -32,7 +51,7 @@ void SinglyLinkedList<T>::push_front(const T item) {
     Node<T>* node = new Node<T>(item); //We can use Node<T>(std::move(item)) here...
     node->next = head;
     head = node;
-    size++;
+    count++;
 }
 
 template<typename T>
@@ -47,25 +66,27 @@ void SinglyLinkedList<T>::push_back(const T item) {
         }
         curr->next = node;
     }
-    size++;
+    count++;
 }
 
 template<typename T>
 T SinglyLinkedList<T>::pop_front() {
-    if(!head || (size == 0)) {
+    if(!head || (count == 0)) {
         throw std::underflow_error("LinkList has no items.");
     }
     Node<T>* temp = head;
     head = head->next;
     T data = temp->data;
     delete temp;
-    --size;
+    --count;
     return data;
 }
 
 template<typename T>
 T SinglyLinkedList<T>::pop_back() {
-    assert(head && (size > 0));
+    if (count == 0) {
+        throw std::underflow_error("LinkList has no items.");
+    }
     T data;
     if (head->next == nullptr) {
         data = head->data;
@@ -80,14 +101,14 @@ T SinglyLinkedList<T>::pop_back() {
         delete curr->next;
         curr->next = nullptr;
     }
-    size--;
+    count--;
     return data;
 
 }
 
 template<typename T>
 T& SinglyLinkedList<T>::get(size_t index) const {
-    assert((index >= 0)&& (index < size));
+    assert((index >= 0)&& (index < count));
     Node<T>* curr = head;
     for (size_t i = 0; i < index; i++) {
         curr = curr->next;
@@ -102,12 +123,12 @@ T& SinglyLinkedList<T>::operator[] (size_t index) {
 
 template<typename T>
 std::optional<T> SinglyLinkedList<T>::front() const {
-    return (size > 0) ? std::optional<T>{get(0)} : std::nullopt;
+    return (count > 0) ? std::optional<T>{get(0)} : std::nullopt;
 }
 
 template<typename T>
 std::optional<T> SinglyLinkedList<T>::back() const {
-    return (size > 0) ? std::optional<T>{get(size - 1)} : std::nullopt;
+    return (count > 0) ? std::optional<T>{get(count - 1)} : std::nullopt;
 }
 
 template<typename T>
@@ -117,7 +138,7 @@ void SinglyLinkedList<T>::clear() {
         Node<T>* next = curr->next;
         delete curr;
         curr = next;
-        size--;
+        count--;
     }
     head = nullptr;
 }

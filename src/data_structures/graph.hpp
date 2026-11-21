@@ -1,3 +1,4 @@
+#pragma once
 
 #include <algorithm>
 #include <iostream>
@@ -14,7 +15,7 @@ public:
     bool remove_vertex(int i);
     void add_edge(int u, int v);
     void remove_edge(int u, int v);
-    bool has_edge(int u, int v) ;
+    bool has_edge(int u, int v) const;
     std::vector<int> dfs(int src) const;
     void dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& vertices) const;
     std::vector<int> bfs(int src) const;
@@ -28,12 +29,12 @@ private:
     void validate_vertex(int i) const;
 };
 
-int Graph::add_vertex() {
+inline int Graph::add_vertex() {
     adj_list.emplace_back();
     return static_cast<int>(adj_list.size() - 1);
 }
 
-bool Graph::remove_vertex(int i) {
+inline bool Graph::remove_vertex(int i) {
     validate_vertex(i);
 
     // Remove the vertex from the list
@@ -50,16 +51,17 @@ bool Graph::remove_vertex(int i) {
             }
         }
     }
+    return true;
 }
 
-// Add a weighted edge from vertex u to vertex v
-void Graph::add_edge(int u, int v) {
+// Add a directed edge from vertex u to vertex v
+inline void Graph::add_edge(int u, int v) {
     validate_vertex(u);
     validate_vertex(v);
     adj_list[u].push_back(v);
 }
 
-void Graph::remove_edge(int u, int v) {
+inline void Graph::remove_edge(int u, int v) {
     validate_vertex(u);
     validate_vertex(v);
     auto& neighbours = adj_list[u];
@@ -69,7 +71,7 @@ void Graph::remove_edge(int u, int v) {
     }
 }
 
-bool Graph::has_edge(int u, int v) {
+inline bool Graph::has_edge(int u, int v) const {
     validate_vertex(u);
     validate_vertex(v);
     auto& neighbours = adj_list[u];
@@ -77,14 +79,15 @@ bool Graph::has_edge(int u, int v) {
     return it != neighbours.end();
 }
 
-std::vector<int> Graph::dfs(int src) const {    
+inline std::vector<int> Graph::dfs(int src) const {    
+    validate_vertex(src);
     std::vector<bool> visited(adj_list.size(), false);
     std::vector<int> vertices;
     dfs_helper(src, visited, vertices);
     return vertices;
 }
 
-void Graph::dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& vertices) const {
+inline void Graph::dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& vertices) const {
     visited[node] = true;
     vertices.push_back(node);
 
@@ -95,7 +98,8 @@ void Graph::dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& v
     }
 }
 
-std::vector<int> Graph::bfs(int src) const {
+inline std::vector<int> Graph::bfs(int src) const {
+    validate_vertex(src);
     std::vector<bool> visited(adj_list.size(), false);
     std::vector<int> vertices;
     std::queue<int> pending_nodes;
@@ -104,7 +108,8 @@ std::vector<int> Graph::bfs(int src) const {
 
     while (pending_nodes.size() > 0) {
         int node = pending_nodes.front();
-        pending_nodes.pop();        
+        pending_nodes.pop();
+        vertices.push_back(node);
 
         for (int neighbour : adj_list[node]) {
             if (!visited[neighbour]) {
@@ -118,25 +123,28 @@ std::vector<int> Graph::bfs(int src) const {
     return vertices;
 }
 
-bool Graph::is_connected() const {
+inline bool Graph::is_connected() const {
+    // Directed graph: "connected" here means every vertex is reachable from vertex 0.
+    if (adj_list.empty()) return true;
     std::vector<int> visited_vertices = dfs(0);
-    return visited_vertices.size() < size();
+    return static_cast<int>(visited_vertices.size()) == size();
 }
 
-bool Graph::path_exists(int src, int dest) const {
+inline bool Graph::path_exists(int src, int dest) const {
     std::vector<int> visited_vertices = dfs(src);
     auto it = std::find(visited_vertices.begin(), visited_vertices.end(), dest);
     return it != visited_vertices.end();
 }
 
-std::optional<std::vector<int>> Graph::shortest_path(int src, int dst) const {
-
+// TODO: not implemented yet
+inline std::optional<std::vector<int>> Graph::shortest_path(int src, int dst) const {
+    throw std::logic_error("Graph::shortest_path not implemented");
 }
 
-int Graph::size() const {
-    return adj_list.size();
+inline int Graph::size() const {
+    return static_cast<int>(adj_list.size());
 }
 
-void Graph::validate_vertex(int i) const {
-    if (i < 0 || i >= adj_list.size()) throw std::out_of_range("invalid index");
+inline void Graph::validate_vertex(int i) const {
+    if (i < 0 || i >= size()) throw std::out_of_range("invalid index");
 }

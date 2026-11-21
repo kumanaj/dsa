@@ -1,33 +1,55 @@
-#include "dnode.hpp"
-#include "data_structures/abstract/ilist.hpp"
+#pragma once
+
+#include <cassert>
+#include <cstddef>
+#include <optional>
+#include <stdexcept>
 
 template <typename T>
-class DoublyLinkedList : public IList<T> {
+struct DNode {
+    T data;
+    DNode* prev;
+    DNode* next;
+
+    DNode() : prev(nullptr), next(nullptr) {}
+    DNode(const T& item): data(item), prev(nullptr), next(nullptr) {} // We can also use std::move(item) here.
+};
+
+template <typename T>
+class DoublyLinkedList {
 public:
-    DoublyLinkedList() : IList<T>() {
+    DoublyLinkedList() : count(0) {
         dummy = new DNode<T>();
         dummy->next = dummy;
         dummy->prev = dummy;
     }
-    virtual ~DoublyLinkedList();
+    ~DoublyLinkedList();
 
-    virtual void push_front(const T item);
-    virtual void push_back(const T item);
-    virtual T pop_front();
-    virtual T pop_back();
-    virtual T& get(size_t index) const;
-    virtual T& operator[] (size_t index);
-    virtual std::optional<T> front() const;
-    virtual std::optional<T> back() const;
-    virtual void clear();
+    // Disable copying (the default copy would share nodes and double-free them)
+    DoublyLinkedList(const DoublyLinkedList<T>& other) = delete;
+    DoublyLinkedList& operator=(const DoublyLinkedList<T>& other) = delete;
+
+    size_t size() const { return count; }
+    bool empty() const { return count == 0; }
+
+    void push_front(const T item);
+    void push_back(const T item);
+    T pop_front();
+    T pop_back();
+    T& get(size_t index) const;
+    T& operator[] (size_t index);
+    std::optional<T> front() const;
+    std::optional<T> back() const;
+    void clear();
 protected:
     DNode<T> *dummy;
-    using IList<T>::size;
+    size_t count;
 };
 
 template<typename T>
 DoublyLinkedList<T>::~DoublyLinkedList() {
     clear();
+    delete dummy;
 }
 
 template<typename T>
@@ -40,7 +62,7 @@ void DoublyLinkedList<T>::push_front(const T item) {
     dummy->next->prev = node;
     dummy->next = node;
 
-    size++;
+    count++;
 }
 
 template<typename T>
@@ -53,12 +75,12 @@ void DoublyLinkedList<T>::push_back(const T item) {
     dummy->prev->next = node;
     dummy->prev = node;
 
-    size++;
+    count++;
 }
 
 template<typename T>
 T DoublyLinkedList<T>::pop_front() {
-    if(size == 0) {
+    if(count == 0) {
         throw std::underflow_error("LinkList has no items.");
     }
 
@@ -70,13 +92,13 @@ T DoublyLinkedList<T>::pop_front() {
     dummy->next->prev = dummy;
 
     delete temp;
-    --size;
+    --count;
     return data;
 }
 
 template<typename T>
 T DoublyLinkedList<T>::pop_back() {
-    if(size == 0) {
+    if(count == 0) {
         throw std::underflow_error("LinkList has no items.");
     }
     DNode<T>* temp = dummy->prev;
@@ -86,14 +108,14 @@ T DoublyLinkedList<T>::pop_back() {
     dummy->prev = temp->prev;
     dummy->prev->next = dummy;
     delete temp;
-    --size;
+    --count;
     return data;
 
 }
 
 template<typename T>
 T& DoublyLinkedList<T>::get(size_t index) const {
-    assert((index >= 0)&& (index < size));
+    assert((index >= 0)&& (index < count));
     DNode<T>* curr = dummy->next;
     for (size_t i = 0; i < index; i++) {
         curr = curr->next;
@@ -108,12 +130,12 @@ T& DoublyLinkedList<T>::operator[] (size_t index) {
 
 template<typename T>
 std::optional<T> DoublyLinkedList<T>::front() const {
-    return (size > 0) ? std::optional<T>{get(0)} : std::nullopt;
+    return (count > 0) ? std::optional<T>{get(0)} : std::nullopt;
 }
 
 template<typename T>
 std::optional<T> DoublyLinkedList<T>::back() const {
-    return (size > 0) ? std::optional<T>{get(size - 1)} : std::nullopt;
+    return (count > 0) ? std::optional<T>{get(count - 1)} : std::nullopt;
 }
 
 template<typename T>
@@ -123,6 +145,9 @@ void DoublyLinkedList<T>::clear() {
         DNode<T>* next = curr->next;
         delete curr;
         curr = next;
-        size--;
+        count--;
     }
+    // Point the sentinel back at itself, otherwise it still references the deleted nodes.
+    dummy->next = dummy;
+    dummy->prev = dummy;
 }

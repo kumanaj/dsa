@@ -1,25 +1,40 @@
-#include "bst_node.hpp"
+#pragma once
+
+#include <algorithm>
+#include <cstddef>
+#include <iostream>
 
 template <typename T>
-class BinarySearchTree : public ITree<BstNode<T>, T> {
+struct BstNode {
+    T key;
+    BstNode *left, *right, *parent;
+    BstNode(T data) : key(data), left(nullptr), right(nullptr), parent(nullptr) {}
+};
+
+template <typename T>
+class BinarySearchTree {
 
 public:
-    virtual BinarySearchTree() {}
-    virtual ~BinarySearchTree() {}
+    BinarySearchTree() : root(nullptr) {}
+    ~BinarySearchTree() { clear(); }
 
-    virtual void insert(const T);
-    virtual void remove(const T);
-    virtual BstNode<T>* search(const T) const;
-    virtual BstNode<T>* get_root() const;
-    virtual BstNode<T>* get_min() const;
-    virtual BstNode<T>* get_max() const;
-    virtual void traverse() const;
-    virtual int depth(BstNode<T>* node) const;
-    virtual int height(BstNode<T>* node) const;
-    virtual int height() const;
-    virtual int size(BstNode<T>* node) const;
-    virtual void size() const;
-    virtual void clear();
+    // Disable copying (the default copy would share nodes and double-free them)
+    BinarySearchTree(const BinarySearchTree<T>& other) = delete;
+    BinarySearchTree& operator=(const BinarySearchTree<T>& other) = delete;
+
+    void insert(const T);
+    void remove(const T);
+    BstNode<T>* search(const T) const;
+    BstNode<T>* get_root() const;
+    BstNode<T>* get_min() const;
+    BstNode<T>* get_max() const;
+    void traverse() const;
+    int depth(BstNode<T>* node) const;
+    int height(BstNode<T>* node) const;
+    int height() const;
+    int size(BstNode<T>* node) const;
+    int size() const;
+    void clear();
 
 private:
     BstNode<T> *root;
@@ -34,34 +49,40 @@ private:
 
 template <typename T>
 void BinarySearchTree<T>::insert(const T key) {
-    root = insert_node(key);
+    root = insert_node(root, key);
+    root->parent = nullptr;
 }
 
 template <typename T>
-BstNode<T>* insert_node(BstNode<T>* node, T key) {
+BstNode<T>* BinarySearchTree<T>::insert_node(BstNode<T>* node, T key) {
     if (node == nullptr) {
         return new BstNode<T>(key);
-    } else if (key < node->left) {
+    } else if (key < node->key) {
         node->left = insert_node(node->left, key);
+        node->left->parent = node;
     } else {
         node->right = insert_node(node->right, key);
+        node->right->parent = node;
     }
     return node;
 }
 
 template <typename T>
-void BinarySearchTree<T>::remove(const T) {
-    remove_node(root, key);
+void BinarySearchTree<T>::remove(const T key) {
+    root = remove_node(root, key);
+    if (root) root->parent = nullptr;
 }
 
 template <typename T>
-BstNode<T>* remove_node(BstNode<T>* node, T key) {
+BstNode<T>* BinarySearchTree<T>::remove_node(BstNode<T>* node, T key) {
     if (node == nullptr) {
         return node;
-    } else if (key < node->left) {
+    } else if (key < node->key) {
         node->left = remove_node(node->left, key);
-    } else if (key > node->right) {
+        if (node->left) node->left->parent = node;
+    } else if (key > node->key) {
         node->right = remove_node(node->right, key);
+        if (node->right) node->right->parent = node;
     } else { // node->key == key case
         // Case 1 - Leaf Node
         if (node->left == nullptr && node->right == nullptr) {
@@ -82,10 +103,12 @@ BstNode<T>* remove_node(BstNode<T>* node, T key) {
 
         // Case 3: Two children
         // Get the inorder predecessor
-        BstNode<T> *temp = this->get_max(root->left);
+        BstNode<T> *temp = get_max_node(node->left);
         node->key = temp->key;
-        remove_node(root->left, temp->key);
+        node->left = remove_node(node->left, temp->key);
+        if (node->left) node->left->parent = node;
     }
+    return node;
 }
 
 template <typename T>
@@ -94,13 +117,13 @@ BstNode<T>* BinarySearchTree<T>::get_root() const {
 }
 
 template <typename T>
-BstNode<T>* BinarySearchTree<T>::search(const T) const {
+BstNode<T>* BinarySearchTree<T>::search(const T key) const {
     return search_node(root, key);
 }
 
 template <typename T>
 BstNode<T>* BinarySearchTree<T>::search_node(BstNode<T>* node, T key) const {
-    if (node == null || node->key == key) {
+    if (node == nullptr || node->key == key) {
         return node;
     } else if (key < node->key) {
         return search_node(node->left, key);
@@ -116,6 +139,7 @@ BstNode<T>* BinarySearchTree<T>::get_min() const {
 
 template <typename T>
 BstNode<T>* BinarySearchTree<T>::get_min_node(BstNode<T>* node) const {
+    if (node == nullptr) return nullptr;
     return node->left ? get_min_node(node->left) : node;
 }
 
@@ -126,6 +150,7 @@ BstNode<T>* BinarySearchTree<T>::get_max() const {
 
 template <typename T>
 BstNode<T>* BinarySearchTree<T>::get_max_node(BstNode<T>* node) const {
+    if (node == nullptr) return nullptr;
     return node->right ? get_max_node(node->right) : node;
 }
 
@@ -170,12 +195,12 @@ int BinarySearchTree<T>::size(BstNode<T>* node) const {
     if (node == nullptr)  {
         return 0;
     }
-    return 1 + height(node->left) + height(node->right);
+    return 1 + size(node->left) + size(node->right);
 }
 
 template <typename T>
-void BinarySearchTree<T>::size() const {
-    return height(this->root);
+int BinarySearchTree<T>::size() const {
+    return size(this->root);
 }
 
 template <typename T>
