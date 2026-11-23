@@ -27,7 +27,7 @@ There is no linter. `compile_commands.json` is exported to `build/`.
 ```
 src/data_structures/<name>.hpp           # one header per structure, flat (no sub-folders)
 src/algorithms/<name>.hpp                # sorting, searching, graph algorithms (not started yet)
-src/problems/<name>.hpp                  # interview problems built on the structures
+src/problems/<name>.hpp                  # function-style interview problems built on the structures ("design a class" problems like LruCache go in data_structures/)
 tests/<same folder as src>/test_<name>.cpp
 ```
 
@@ -38,14 +38,19 @@ tests/<same folder as src>/test_<name>.cpp
 ## Conventions
 
 - Each structure is a single self-contained class. There are no abstract interfaces and no `virtual`. Consistency comes from the conventions below, not from a base class.
-- Node structs live in the same header as the structure that uses them (`Node` in `singly_linked_list.hpp`, `DNode` in `doubly_linked_list.hpp`, `BstNode` in `bst.hpp`).
+- Node structs live in the same header as the structure that uses them and each has a unique name (`Node`, `DNode`, `BstNode`, `StackNode`, `HashNode`, `TrieNode`, `AvlNode`, `WeightedEdge`, `LruNode`), because two different structs with the same name in one test binary break the one-definition rule.
 - Every header starts with `#pragma once` and includes the standard headers it uses (`<cassert>`, `<optional>`, `<stdexcept>`, ...).
 - Names are snake_case for methods and files, PascalCase for classes and node structs.
-- Containers use names from the standard library: `size()`, `empty()`, `push_front/push_back`, `pop_front/pop_back`, `front()/back()`, `get(i)`/`operator[]`, `clear()`. The element counter member is `size_t count`.
-- Classes are templates with every method defined inline in the class body (no out-of-line definitions), the way you'd write it in an interview. Public API comes first, then private members and helpers.
+- Containers use names from the standard library: `size()`, `empty()`, `push_front/push_back`, `pop_front/pop_back`, `front()/back()`, `get(i)`/`operator[]`, `clear()`. The element counter member is `size_t count`; structures backed by a `std::vector` use its size instead. Stack, queue and heap use `push`/`pop`/`top` or `front`/`back` like `std::stack`, `std::queue` and `std::priority_queue`.
+- Classes (templates where the element type varies) have every method defined inline in the class body (no out-of-line definitions), the way you'd write it in an interview. Public API comes first, then private members and helpers.
 - `front()`/`back()` return `std::optional<T>`. Popping from an empty container throws `std::underflow_error`, and tests check it with `EXPECT_THROW`.
 - GoogleTest suite names are `<ClassName>Test` (e.g. `SinglyLinkedListTest.PopFront`).
 - Methods the owner hasn't written yet are stubs that `throw std::logic_error("<Class>::<method> not implemented")`, marked `// TODO: not implemented yet`, so the header compiles. Their tests are written in advance and fail until the owner implements them. Don't fill these in unless asked.
 - Classes that own raw pointers delete their copy constructor and copy assignment.
+- A destructor must not call a stub (a throw from a destructor terminates the whole test run). Until `clear()` is written, the destructor holds a `// TODO` comment instead and leaks, so expect LeakSanitizer reports with `ENABLE_ASAN=ON`.
 - `Graph` is a non-template, **directed** adjacency-list graph over `int` vertices. Its methods are defined in the class body, so they need no `inline` keyword; if a non-template header ever defines a function outside a class, mark it `inline`. `is_connected()` means every vertex is reachable from vertex 0.
 - `BinarySearchTree` keeps `parent` pointers up to date on insert and remove. `height()` and `depth()` count nodes, not edges (a single node has height 1 and the root has depth 1).
+- `AvlTree` has no parent pointers, ignores duplicate keys, and stores each node's `height` counting nodes like `BinarySearchTree`.
+- `WeightedGraph` is directed like `Graph` and throws `std::out_of_range` for invalid vertices. `dijkstra()` returns `WeightedGraph::INF` for unreachable vertices; `topological_sort()` returns `std::nullopt` on a cycle.
+- `Trie` handles lowercase `a`-`z` only.
+- `LruCache` has `int` keys and values, and `get()` returns `std::optional<int>`.
