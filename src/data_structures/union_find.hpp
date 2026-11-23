@@ -9,7 +9,7 @@ class UnionFind {
 public:
     // TODO: not implemented yet
     // Start with every element in its own set (its own parent).
-    UnionFind(int n) : parent(n), rank(n, 0), components(n) {
+    explicit UnionFind(int n) : parent(n), rank(n, 0), components(n) {
         throw std::logic_error("UnionFind::UnionFind not implemented");
     }
 

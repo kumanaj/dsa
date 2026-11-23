@@ -11,7 +11,7 @@ struct Node {
     Node* next;
 
     Node() : next(nullptr) {}
-    Node(const T& item) : data(item), next(nullptr) {} // We can also use std::move(item) here.
+    Node(const T& item) : data(item), next(nullptr) {} // Copies item; a T&& overload could std::move it instead.
 };
 
 template <typename T>
@@ -30,14 +30,14 @@ public:
     size_t size() const { return count; }
     bool empty() const { return count == 0; }
 
-    void push_front(const T item) {
-        Node<T>* node = new Node<T>(item); //We can use Node<T>(std::move(item)) here...
+    void push_front(const T& item) {
+        Node<T>* node = new Node<T>(item);
         node->next = head;
         head = node;
         count++;
     }
 
-    void push_back(const T item) {
+    void push_back(const T& item) {
         Node<T>* node = new Node<T>(item);
         if (!head) {
             head = node;
@@ -53,7 +53,7 @@ public:
 
     T pop_front() {
         if(!head || (count == 0)) {
-            throw std::underflow_error("LinkList has no items.");
+            throw std::underflow_error("SinglyLinkedList has no items.");
         }
         Node<T>* temp = head;
         head = head->next;
@@ -65,7 +65,7 @@ public:
 
     T pop_back() {
         if (count == 0) {
-            throw std::underflow_error("LinkList has no items.");
+            throw std::underflow_error("SinglyLinkedList has no items.");
         }
         T data;
         if (head->next == nullptr) {
@@ -85,16 +85,19 @@ public:
         return data;
     }
 
-    T& get(size_t index) const {
-        assert((index >= 0)&& (index < count));
-        Node<T>* curr = head;
-        for (size_t i = 0; i < index; i++) {
-            curr = curr->next;
-        }
-        return curr->data;
+    T& get(size_t index) {
+        return node_at(index)->data;
+    }
+
+    const T& get(size_t index) const {
+        return node_at(index)->data;
     }
 
     T& operator[] (size_t index) {
+        return get(index);
+    }
+
+    const T& operator[] (size_t index) const {
         return get(index);
     }
 
@@ -117,7 +120,17 @@ public:
         head = nullptr;
     }
 
-protected:
+private:
+    // Walk to position index (shared by both versions of get).
+    Node<T>* node_at(size_t index) const {
+        assert(index < count);
+        Node<T>* curr = head;
+        for (size_t i = 0; i < index; i++) {
+            curr = curr->next;
+        }
+        return curr;
+    }
+
     Node<T> *head;
     size_t count;
 };

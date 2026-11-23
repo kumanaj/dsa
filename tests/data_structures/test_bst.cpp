@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <vector>
 #include "data_structures/bst.hpp"
 
 // Builds:      5
@@ -12,17 +13,15 @@ static void build_sample(BinarySearchTree<int>& tree) {
     }
 }
 
-static std::string traverse_output(const BinarySearchTree<int>& tree) {
-    testing::internal::CaptureStdout();
-    tree.traverse();
-    return testing::internal::GetCapturedStdout();
-}
+using Keys = std::vector<int>;
 
 TEST(BinarySearchTreeTest, StartsEmpty) {
     BinarySearchTree<int> tree;
     EXPECT_EQ(tree.get_root(), nullptr);
-    EXPECT_EQ(tree.size(), 0);
+    EXPECT_TRUE(tree.empty());
+    EXPECT_EQ(tree.size(), 0u);
     EXPECT_EQ(tree.height(), 0);
+    EXPECT_TRUE(tree.in_order().empty());
     EXPECT_EQ(tree.search(1), nullptr);
     EXPECT_EQ(tree.get_min(), nullptr);
     EXPECT_EQ(tree.get_max(), nullptr);
@@ -65,16 +64,27 @@ TEST(BinarySearchTreeTest, MinMax) {
 TEST(BinarySearchTreeTest, SizeHeightDepth) {
     BinarySearchTree<int> tree;
     build_sample(tree);
-    EXPECT_EQ(tree.size(), 7);
+    EXPECT_EQ(tree.size(), 7u);
     EXPECT_EQ(tree.height(), 3);                 // counts nodes on the longest path
     EXPECT_EQ(tree.depth(tree.get_root()), 1);   // counts nodes from root down to node
     EXPECT_EQ(tree.depth(tree.search(9)), 3);
 }
 
-TEST(BinarySearchTreeTest, TraverseIsInOrder) {
+TEST(BinarySearchTreeTest, InOrderIsSorted) {
     BinarySearchTree<int> tree;
     build_sample(tree);
-    EXPECT_EQ(traverse_output(tree), "1 3 4 5 7 8 9 ");
+    EXPECT_EQ(tree.in_order(), (Keys{1, 3, 4, 5, 7, 8, 9}));
+}
+
+TEST(BinarySearchTreeTest, DuplicatesAreCounted) {
+    BinarySearchTree<int> tree;
+    tree.insert(2);
+    tree.insert(2);
+    EXPECT_EQ(tree.size(), 2u);
+    EXPECT_EQ(tree.in_order(), (Keys{2, 2}));
+    tree.remove(2);
+    EXPECT_EQ(tree.size(), 1u);
+    EXPECT_EQ(tree.in_order(), (Keys{2}));
 }
 
 TEST(BinarySearchTreeTest, RemoveLeaf) {
@@ -82,8 +92,8 @@ TEST(BinarySearchTreeTest, RemoveLeaf) {
     build_sample(tree);
     tree.remove(1);
     EXPECT_EQ(tree.search(1), nullptr);
-    EXPECT_EQ(tree.size(), 6);
-    EXPECT_EQ(traverse_output(tree), "3 4 5 7 8 9 ");
+    EXPECT_EQ(tree.size(), 6u);
+    EXPECT_EQ(tree.in_order(), (Keys{3, 4, 5, 7, 8, 9}));
 }
 
 TEST(BinarySearchTreeTest, RemoveNodeWithOneChild) {
@@ -93,7 +103,7 @@ TEST(BinarySearchTreeTest, RemoveNodeWithOneChild) {
     tree.remove(3);   // 3 now has only the right child 4
     EXPECT_EQ(tree.get_root()->left->key, 4);
     EXPECT_EQ(tree.search(4)->parent, tree.get_root());
-    EXPECT_EQ(traverse_output(tree), "4 5 7 8 9 ");
+    EXPECT_EQ(tree.in_order(), (Keys{4, 5, 7, 8, 9}));
 }
 
 TEST(BinarySearchTreeTest, RemoveNodeWithTwoChildren) {
@@ -101,17 +111,17 @@ TEST(BinarySearchTreeTest, RemoveNodeWithTwoChildren) {
     build_sample(tree);
     tree.remove(8);
     EXPECT_EQ(tree.search(8), nullptr);
-    EXPECT_EQ(tree.size(), 6);
-    EXPECT_EQ(traverse_output(tree), "1 3 4 5 7 9 ");
+    EXPECT_EQ(tree.size(), 6u);
+    EXPECT_EQ(tree.in_order(), (Keys{1, 3, 4, 5, 7, 9}));
 }
 
 TEST(BinarySearchTreeTest, RemoveRoot) {
     BinarySearchTree<int> tree;
     build_sample(tree);
     tree.remove(5);
-    EXPECT_EQ(tree.size(), 6);
+    EXPECT_EQ(tree.size(), 6u);
     EXPECT_EQ(tree.get_root()->parent, nullptr);
-    EXPECT_EQ(traverse_output(tree), "1 3 4 7 8 9 ");
+    EXPECT_EQ(tree.in_order(), (Keys{1, 3, 4, 7, 8, 9}));
 }
 
 TEST(BinarySearchTreeTest, RemoveOnlyNode) {
@@ -119,14 +129,14 @@ TEST(BinarySearchTreeTest, RemoveOnlyNode) {
     tree.insert(1);
     tree.remove(1);
     EXPECT_EQ(tree.get_root(), nullptr);
-    EXPECT_EQ(tree.size(), 0);
+    EXPECT_EQ(tree.size(), 0u);
 }
 
 TEST(BinarySearchTreeTest, RemoveMissingKeyIsNoOp) {
     BinarySearchTree<int> tree;
     build_sample(tree);
     tree.remove(42);
-    EXPECT_EQ(tree.size(), 7);
+    EXPECT_EQ(tree.size(), 7u);
 }
 
 TEST(BinarySearchTreeTest, ClearThenReuse) {
@@ -134,7 +144,9 @@ TEST(BinarySearchTreeTest, ClearThenReuse) {
     build_sample(tree);
     tree.clear();
     EXPECT_EQ(tree.get_root(), nullptr);
-    EXPECT_EQ(tree.size(), 0);
+    EXPECT_TRUE(tree.empty());
+    EXPECT_EQ(tree.size(), 0u);
     tree.insert(2);
+    EXPECT_EQ(tree.size(), 1u);
     EXPECT_EQ(tree.get_root()->key, 2);
 }

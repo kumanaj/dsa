@@ -77,6 +77,12 @@ TEST(GraphTest, PathExists) {
     EXPECT_FALSE(g.path_exists(0, 4));
 }
 
+TEST(GraphTest, PathExistsInvalidVertexThrows) {
+    Graph g = build_sample();
+    EXPECT_THROW(g.path_exists(0, 5), std::out_of_range);
+    EXPECT_THROW(g.path_exists(-1, 0), std::out_of_range);
+}
+
 TEST(GraphTest, IsConnected) {
     Graph g = build_sample();
     EXPECT_FALSE(g.is_connected());   // 4 is unreachable from 0

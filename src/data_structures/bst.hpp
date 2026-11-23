@@ -2,37 +2,43 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <iostream>
+#include <vector>
 
 template <typename T>
 struct BstNode {
     T key;
     BstNode *left, *right, *parent;
-    BstNode(T data) : key(data), left(nullptr), right(nullptr), parent(nullptr) {}
+    BstNode(const T& data) : key(data), left(nullptr), right(nullptr), parent(nullptr) {}
 };
 
 template <typename T>
 class BinarySearchTree {
 
 public:
-    BinarySearchTree() : root(nullptr) {}
+    BinarySearchTree() : root(nullptr), count(0) {}
     ~BinarySearchTree() { clear(); }
 
     // Disable copying (the default copy would share nodes and double-free them)
     BinarySearchTree(const BinarySearchTree<T>& other) = delete;
     BinarySearchTree& operator=(const BinarySearchTree<T>& other) = delete;
 
-    void insert(const T key) {
+    size_t size() const { return count; }
+    bool empty() const { return count == 0; }
+
+    void insert(const T& key) {
         root = insert_node(root, key);
         root->parent = nullptr;
+        count++;   // duplicates are inserted too (they go right)
     }
 
-    void remove(const T key) {
+    void remove(const T& key) {
+        if (search_node(root, key) == nullptr) return;   // missing key: nothing to remove or count
         root = remove_node(root, key);
         if (root) root->parent = nullptr;
+        count--;
     }
 
-    BstNode<T>* search(const T key) const {
+    BstNode<T>* search(const T& key) const {
         return search_node(root, key);
     }
 
@@ -48,12 +54,15 @@ public:
         return get_max_node(this->root);
     }
 
-    void traverse() const {
-        this->traverse_node(this->root);
+    // Keys in sorted order.
+    std::vector<T> in_order() const {
+        std::vector<T> keys;
+        in_order_node(root, keys);
+        return keys;
     }
 
     int depth(BstNode<T>* node) const {
-        size_t depth = 0;
+        int depth = 0;
         while (node != nullptr) {
             node = node->parent;
             depth++;
@@ -72,24 +81,15 @@ public:
         return height(this->root);
     }
 
-    int size(BstNode<T>* node) const {
-        if (node == nullptr)  {
-            return 0;
-        }
-        return 1 + size(node->left) + size(node->right);
-    }
-
-    int size() const {
-        return size(this->root);
-    }
-
     void clear() {
         this->delete_subtree(this->root);
         root = nullptr;
+        count = 0;
     }
 
 private:
     BstNode<T> *root;
+    size_t count;
 
     BstNode<T>* insert_node(BstNode<T>* node, T key) {
         if (node == nullptr) {
@@ -161,14 +161,14 @@ private:
         return node->right ? get_max_node(node->right) : node;
     }
 
-    void traverse_node(BstNode<T>* node) const {
+    void in_order_node(BstNode<T>* node, std::vector<T>& keys) const {
         if (node == nullptr) return;
-        traverse_node(node->left);
-        std::cout << node->key << " ";
-        traverse_node(node->right);
+        in_order_node(node->left, keys);
+        keys.push_back(node->key);
+        in_order_node(node->right, keys);
     }
 
-    void delete_subtree(BstNode<T>* node) const {
+    void delete_subtree(BstNode<T>* node) {
         if (node == nullptr) return;
         this->delete_subtree(node->left);
         this->delete_subtree(node->right);

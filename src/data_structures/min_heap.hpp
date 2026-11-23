@@ -22,7 +22,7 @@ public:
 
     // TODO: not implemented yet
     // Build a heap from unsorted values in O(n) (heapify), not n pushes.
-    MinHeap(const std::vector<T>& values) : data(values) {
+    explicit MinHeap(const std::vector<T>& values) : data(values) {
         throw std::logic_error("MinHeap::MinHeap(values) not implemented");
     }
 
@@ -30,7 +30,7 @@ public:
     bool empty() const { return data.empty(); }
 
     // TODO: not implemented yet
-    void push(const T item) {
+    void push(const T& item) {
         throw std::logic_error("MinHeap::push not implemented");
     }
 

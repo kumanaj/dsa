@@ -76,3 +76,11 @@ TEST(SinglyLinkedListTest, ClearThenReuse) {
     EXPECT_EQ(list.front(), 3);
     EXPECT_EQ(list.size(), 1u);
 }
+
+TEST(SinglyLinkedListTest, ConstAccess) {
+    SinglyLinkedList<int> list;
+    list.push_back(5);
+    const SinglyLinkedList<int>& view = list;
+    EXPECT_EQ(view.get(0), 5);
+    EXPECT_EQ(view[0], 5);
+}

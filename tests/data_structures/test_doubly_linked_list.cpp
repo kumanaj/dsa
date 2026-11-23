@@ -89,3 +89,11 @@ TEST(DoublyLinkedListTest, ClearThenReuse) {
     EXPECT_EQ(list.back(), 3);
     EXPECT_EQ(list.size(), 1u);
 }
+
+TEST(DoublyLinkedListTest, ConstAccess) {
+    DoublyLinkedList<int> list;
+    list.push_back(5);
+    const DoublyLinkedList<int>& view = list;
+    EXPECT_EQ(view.get(0), 5);
+    EXPECT_EQ(view[0], 5);
+}

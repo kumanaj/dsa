@@ -12,7 +12,7 @@ struct DNode {
     DNode* next;
 
     DNode() : prev(nullptr), next(nullptr) {}
-    DNode(const T& item): data(item), prev(nullptr), next(nullptr) {} // We can also use std::move(item) here.
+    DNode(const T& item): data(item), prev(nullptr), next(nullptr) {} // Copies item; a T&& overload could std::move it instead.
 };
 
 template <typename T>
@@ -36,7 +36,7 @@ public:
     size_t size() const { return count; }
     bool empty() const { return count == 0; }
 
-    void push_front(const T item) {
+    void push_front(const T& item) {
         DNode<T>* node = new DNode<T>(item);
 
         // Link the new node with the dummy node and the first node
@@ -48,7 +48,7 @@ public:
         count++;
     }
 
-    void push_back(const T item) {
+    void push_back(const T& item) {
         DNode<T>* node = new DNode<T>(item);
 
         // Link the new node with the last node and the dummy node
@@ -62,7 +62,7 @@ public:
 
     T pop_front() {
         if(count == 0) {
-            throw std::underflow_error("LinkList has no items.");
+            throw std::underflow_error("DoublyLinkedList has no items.");
         }
 
         DNode<T>* temp = dummy->next;
@@ -79,7 +79,7 @@ public:
 
     T pop_back() {
         if(count == 0) {
-            throw std::underflow_error("LinkList has no items.");
+            throw std::underflow_error("DoublyLinkedList has no items.");
         }
         DNode<T>* temp = dummy->prev;
         T data = temp->data;
@@ -92,16 +92,19 @@ public:
         return data;
     }
 
-    T& get(size_t index) const {
-        assert((index >= 0)&& (index < count));
-        DNode<T>* curr = dummy->next;
-        for (size_t i = 0; i < index; i++) {
-            curr = curr->next;
-        }
-        return curr->data;
+    T& get(size_t index) {
+        return node_at(index)->data;
+    }
+
+    const T& get(size_t index) const {
+        return node_at(index)->data;
     }
 
     T& operator[] (size_t index) {
+        return get(index);
+    }
+
+    const T& operator[] (size_t index) const {
         return get(index);
     }
 
@@ -126,7 +129,17 @@ public:
         dummy->prev = dummy;
     }
 
-protected:
+private:
+    // Walk to position index (shared by both versions of get).
+    DNode<T>* node_at(size_t index) const {
+        assert(index < count);
+        DNode<T>* curr = dummy->next;
+        for (size_t i = 0; i < index; i++) {
+            curr = curr->next;
+        }
+        return curr;
+    }
+
     DNode<T> *dummy;
     size_t count;
 };

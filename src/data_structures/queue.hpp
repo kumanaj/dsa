@@ -16,7 +16,7 @@ public:
         head(0),
         count(0) {}
 
-    Queue(size_t initial_capacity) :
+    explicit Queue(size_t initial_capacity) :
         arr(new T[initial_capacity]),
         capacity(initial_capacity),
         head(0),
@@ -34,7 +34,7 @@ public:
     bool empty() const { return count == 0; }
 
     // TODO: not implemented yet
-    void push(const T item) {
+    void push(const T& item) {
         throw std::logic_error("Queue::push not implemented");
     }
 

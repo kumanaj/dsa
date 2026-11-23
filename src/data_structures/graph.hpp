@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <iostream>
 #include <optional>
 #include <queue>
 #include <stdexcept>
@@ -10,7 +9,7 @@
 class Graph {
 
 public:
-    Graph(int n) : adj_list(n) { }
+    explicit Graph(int n) : adj_list(n) { }
 
     int add_vertex() {
         adj_list.emplace_back();
@@ -70,17 +69,6 @@ public:
         return vertices;
     }
 
-    void dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& vertices) const {
-        visited[node] = true;
-        vertices.push_back(node);
-
-        for (int neighbour : adj_list[node]) {
-            if (!visited[neighbour]) {
-                dfs_helper(neighbour, visited, vertices);
-            }
-        }
-    }
-
     std::vector<int> bfs(int src) const {
         validate_vertex(src);
         std::vector<bool> visited(adj_list.size(), false);
@@ -114,6 +102,7 @@ public:
     }
 
     bool path_exists(int src, int dest) const {
+        validate_vertex(dest);   // dfs() validates src
         std::vector<int> visited_vertices = dfs(src);
         auto it = std::find(visited_vertices.begin(), visited_vertices.end(), dest);
         return it != visited_vertices.end();
@@ -130,6 +119,17 @@ public:
 
 private:
     std::vector<std::vector<int>> adj_list;
+
+    void dfs_helper(int node, std::vector<bool>& visited, std::vector<int>& vertices) const {
+        visited[node] = true;
+        vertices.push_back(node);
+
+        for (int neighbour : adj_list[node]) {
+            if (!visited[neighbour]) {
+                dfs_helper(neighbour, visited, vertices);
+            }
+        }
+    }
 
     void validate_vertex(int i) const {
         if (i < 0 || i >= size()) throw std::out_of_range("invalid index");

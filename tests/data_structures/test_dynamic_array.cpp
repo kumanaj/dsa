@@ -115,3 +115,35 @@ TEST(DynamicArrayTest, ClearThenReuse) {
     EXPECT_EQ(arr.size(), 1u);
     EXPECT_EQ(arr[0], 3);
 }
+
+TEST(DynamicArrayTest, InsertOwnElementWhileResizing) {
+    DynamicArray<int> arr(2);
+    arr.insert_at(0, 1);
+    arr.insert_at(1, 2);       // full
+    arr.insert_at(0, arr[1]);  // item refers into arr and a resize happens first
+    EXPECT_EQ(arr.size(), 3u);
+    EXPECT_EQ(arr[0], 2);
+    EXPECT_EQ(arr[1], 1);
+    EXPECT_EQ(arr[2], 2);
+}
+
+TEST(DynamicArrayTest, EmptyAfterPopBackThenRegrows) {
+    DynamicArray<int> arr;
+    for (int i = 0; i < 100; i++) {
+        arr.push_back(i);
+    }
+    for (int i = 99; i >= 0; i--) {
+        EXPECT_EQ(arr.pop_back(), i);
+    }
+    EXPECT_TRUE(arr.empty());
+    arr.push_back(7);   // capacity must not have shrunk to 0
+    EXPECT_EQ(arr[0], 7);
+}
+
+TEST(DynamicArrayTest, ConstAccess) {
+    DynamicArray<int> arr;
+    arr.insert_at(0, 5);
+    const DynamicArray<int>& view = arr;
+    EXPECT_EQ(view.get(0), 5);
+    EXPECT_EQ(view[0], 5);
+}

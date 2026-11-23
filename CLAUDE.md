@@ -47,9 +47,10 @@ tests/<same folder as src>/test_<name>.cpp
 - GoogleTest suite names are `<ClassName>Test` (e.g. `SinglyLinkedListTest.PopFront`).
 - Methods the owner hasn't written yet are stubs that `throw std::logic_error("<Class>::<method> not implemented")`, marked `// TODO: not implemented yet`, so the header compiles. Their tests are written in advance and fail until the owner implements them. Don't fill these in unless asked.
 - Classes that own raw pointers delete their copy constructor and copy assignment.
+- Items and keys are passed as `const T&` in the public API. Single-argument constructors are `explicit`. Data members and internal helpers (`resize`, `dfs_helper`, `*_node` recursion) are `private` (nothing inherits, so no `protected`).
 - A destructor must not call a stub (a throw from a destructor terminates the whole test run). Until `clear()` is written, the destructor holds a `// TODO` comment instead and leaks, so expect LeakSanitizer reports with `ENABLE_ASAN=ON`.
 - `Graph` is a non-template, **directed** adjacency-list graph over `int` vertices. Its methods are defined in the class body, so they need no `inline` keyword; if a non-template header ever defines a function outside a class, mark it `inline`. `is_connected()` means every vertex is reachable from vertex 0.
-- `BinarySearchTree` keeps `parent` pointers up to date on insert and remove. `height()` and `depth()` count nodes, not edges (a single node has height 1 and the root has depth 1).
+- `BinarySearchTree` keeps `parent` pointers up to date on insert and remove. `height()` and `depth()` count nodes, not edges (a single node has height 1 and the root has depth 1). It keeps duplicate keys (they go right), tracks `size_t count` so `size()` is O(1), and exposes `in_order()` returning a `std::vector<T>` instead of printing.
 - `AvlTree` has no parent pointers, ignores duplicate keys, and stores each node's `height` counting nodes like `BinarySearchTree`.
 - `WeightedGraph` is directed like `Graph` and throws `std::out_of_range` for invalid vertices. `dijkstra()` returns `WeightedGraph::INF` for unreachable vertices; `topological_sort()` returns `std::nullopt` on a cycle.
 - `Trie` handles lowercase `a`-`z` only.

@@ -21,7 +21,7 @@ struct LruNode {
 
 class LruCache {
 public:
-    LruCache(size_t capacity) : capacity(capacity), dummy(new LruNode(0, 0)) {
+    explicit LruCache(size_t capacity) : capacity(capacity), dummy(new LruNode(0, 0)) {
         dummy->next = dummy;
         dummy->prev = dummy;
     }

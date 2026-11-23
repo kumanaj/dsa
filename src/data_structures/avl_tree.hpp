@@ -15,7 +15,7 @@ struct AvlNode {
     AvlNode *left, *right;
     int height;
 
-    AvlNode(T data) : key(data), left(nullptr), right(nullptr), height(1) {}
+    AvlNode(const T& data) : key(data), left(nullptr), right(nullptr), height(1) {}
 };
 
 template <typename T>
@@ -36,18 +36,18 @@ public:
     AvlNode<T>* get_root() const { return root; }
 
     // TODO: not implemented yet
-    void insert(const T key) {
+    void insert(const T& key) {
         throw std::logic_error("AvlTree::insert not implemented");
     }
 
     // TODO: not implemented yet
     // Does nothing if the key isn't in the tree.
-    void remove(const T key) {
+    void remove(const T& key) {
         throw std::logic_error("AvlTree::remove not implemented");
     }
 
     // TODO: not implemented yet
-    bool contains(const T key) const {
+    bool contains(const T& key) const {
         throw std::logic_error("AvlTree::contains not implemented");
     }
 

@@ -18,7 +18,7 @@ class WeightedGraph {
 public:
     static constexpr int INF = std::numeric_limits<int>::max();
 
-    WeightedGraph(int n) : adj_list(n) {}
+    explicit WeightedGraph(int n) : adj_list(n) {}
 
     int size() const { return static_cast<int>(adj_list.size()); }
 

@@ -9,7 +9,7 @@ C++17 data structure implementations for interview practice, tested with GoogleT
 | Singly linked list | [singly_linked_list.hpp](./src/data_structures/singly_linked_list.hpp) | push/pop front/back, get, front, back, clear | ✅ |
 | Doubly linked list | [doubly_linked_list.hpp](./src/data_structures/doubly_linked_list.hpp) | push/pop front/back (sentinel node) | ✅ |
 | Dynamic array | [dynamic_array.hpp](./src/data_structures/dynamic_array.hpp) | insert_at, remove_at, push/pop, resize | 🚧 resize, push_back, front, back, clear to do |
-| Binary search tree | [bst.hpp](./src/data_structures/bst.hpp) | insert, remove, search, min/max, height | ✅ |
+| Binary search tree | [bst.hpp](./src/data_structures/bst.hpp) | insert, remove, search, min/max, height, in_order | ✅ |
 | Graph (adjacency list) | [graph.hpp](./src/data_structures/graph.hpp) | add/remove vertex & edge, DFS, BFS, shortest path | 🚧 shortest_path to do |
 | Stack | [stack.hpp](./src/data_structures/stack.hpp) | push, pop, top (linked nodes) | 🚧 not started |
 | Queue | [queue.hpp](./src/data_structures/queue.hpp) | push, pop, front, back (circular buffer) | 🚧 not started |

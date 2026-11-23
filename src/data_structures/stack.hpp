@@ -31,7 +31,7 @@ public:
     bool empty() const { return count == 0; }
 
     // TODO: not implemented yet
-    void push(const T item) {
+    void push(const T& item) {
         throw std::logic_error("Stack::push not implemented");
     }
 
