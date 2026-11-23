@@ -42,10 +42,10 @@ tests/<same folder as src>/test_<name>.cpp
 - Every header starts with `#pragma once` and includes the standard headers it uses (`<cassert>`, `<optional>`, `<stdexcept>`, ...).
 - Names are snake_case for methods and files, PascalCase for classes and node structs.
 - Containers use names from the standard library: `size()`, `empty()`, `push_front/push_back`, `pop_front/pop_back`, `front()/back()`, `get(i)`/`operator[]`, `clear()`. The element counter member is `size_t count`.
-- Classes are templates declared in the class body and defined out-of-line below it in the same header. Trivial one-liners such as `size()`/`empty()` are defined inline.
+- Classes are templates with every method defined inline in the class body (no out-of-line definitions), the way you'd write it in an interview. Public API comes first, then private members and helpers.
 - `front()`/`back()` return `std::optional<T>`. Popping from an empty container throws `std::underflow_error`, and tests check it with `EXPECT_THROW`.
 - GoogleTest suite names are `<ClassName>Test` (e.g. `SinglyLinkedListTest.PopFront`).
 - Methods the owner hasn't written yet are stubs that `throw std::logic_error("<Class>::<method> not implemented")`, marked `// TODO: not implemented yet`, so the header compiles. Their tests are written in advance and fail until the owner implements them. Don't fill these in unless asked.
 - Classes that own raw pointers delete their copy constructor and copy assignment.
-- `Graph` is a non-template, **directed** adjacency-list graph over `int` vertices. Its out-of-line definitions in the header are marked `inline`, and new non-template headers must do the same. `is_connected()` means every vertex is reachable from vertex 0.
+- `Graph` is a non-template, **directed** adjacency-list graph over `int` vertices. Its methods are defined in the class body, so they need no `inline` keyword; if a non-template header ever defines a function outside a class, mark it `inline`. `is_connected()` means every vertex is reachable from vertex 0.
 - `BinarySearchTree` keeps `parent` pointers up to date on insert and remove. `height()` and `depth()` count nodes, not edges (a single node has height 1 and the root has depth 1).

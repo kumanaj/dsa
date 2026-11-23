@@ -32,18 +32,85 @@ public:
     size_t size() const { return count; }
     bool empty() const { return count == 0; }
 
-    void resize();
-    void insert_at(size_t index, const T item);
-    void remove_at(size_t index);
-    void push_front(const T item);
-    void push_back(const T item);
-    T pop_front();
-    T pop_back();
-    T& get(size_t index) const;
-    T& operator[] (size_t index);
-    std::optional<T> front() const;
-    std::optional<T> back() const;
-    void clear();
+    // TODO: not implemented yet
+    void resize() {
+        throw std::logic_error("DynamicArray::resize not implemented");
+    }
+
+    void insert_at(size_t index, const T item) {
+        assert(index <= count);
+        if (count == capacity) {
+            resize();
+        }
+        for (size_t j = count; j > index; j--) {
+            arr[j] = arr[j-1];
+        }
+        arr[index] = item;
+        count++;
+    }
+
+    void remove_at(size_t index) {
+        assert((index >= 0)&& (index < count));
+        for (size_t j = index; j < count - 1; j++) {
+            arr[j] = arr[j + 1];
+        }
+        count--;
+
+        if (capacity >= 3 * count) {
+            resize();
+        }
+    }
+
+    void push_front(const T item) {
+        insert_at(0, item);
+    }
+
+    // TODO: not implemented yet
+    void push_back(const T item) {
+        throw std::logic_error("DynamicArray::push_back not implemented");
+    }
+
+    T pop_front() {
+        if (count == 0) {
+            throw std::underflow_error("DynamicArray has no items.");
+        }
+        T data = arr[0];
+        remove_at(0);
+        return data;
+    }
+
+    T pop_back() {
+        if (count == 0) {
+            throw std::underflow_error("DynamicArray has no items.");
+        }
+        T data = arr[count - 1];
+        count--;
+        return data;
+    }
+
+    T& get(size_t index) const {
+        assert((index >= 0)&& (index < count));
+        return arr[index];
+    }
+
+    T& operator[](size_t index) {
+        return arr[index];
+    }
+
+    // TODO: not implemented yet
+    std::optional<T> front() const {
+        throw std::logic_error("DynamicArray::front not implemented");
+    }
+
+    // TODO: not implemented yet
+    std::optional<T> back() const {
+        throw std::logic_error("DynamicArray::back not implemented");
+    }
+
+    // TODO: not implemented yet
+    void clear() {
+        throw std::logic_error("DynamicArray::clear not implemented");
+    }
 
 protected:
     T* arr;
@@ -51,91 +118,3 @@ protected:
     size_t count;
     static constexpr int DEFAULT_CAPACITY = 8;
 };
-
-template <typename T>
-void DynamicArray<T>::insert_at(size_t index, const T item) {
-    assert(index <= count);
-    if (count == capacity) {
-        resize();
-    }
-    for (size_t j = count; j > index; j--) {
-        arr[j] = arr[j-1];
-    }
-    arr[index] = item;
-    count++;
-}
-
-template <typename T>
-void DynamicArray<T>::remove_at(size_t index) {
-    assert((index >= 0)&& (index < count));
-    for (size_t j = index; j < count - 1; j++) {
-        arr[j] = arr[j + 1];
-    }
-    count--;
-
-    if (capacity >= 3 * count) {
-        resize();
-    }
-}
-
-template <typename T>
-T& DynamicArray<T>::get(size_t index) const {
-    assert((index >= 0)&& (index < count));
-    return arr[index];
-}
-
-template <typename T>
-T& DynamicArray<T>::operator[](size_t index) {
-    return arr[index];
-}
-
-template <typename T>
-void DynamicArray<T>::push_front(const T item) {
-    insert_at(0, item);
-}
-
-template <typename T>
-void DynamicArray<T>::push_back(const T item) {
-    throw std::logic_error("DynamicArray::push_back not implemented");
-}
-
-template <typename T>
-T DynamicArray<T>::pop_front() {
-    if (count == 0) {
-        throw std::underflow_error("DynamicArray has no items.");
-    }
-    T data = arr[0];
-    remove_at(0);
-    return data;
-}
-
-template <typename T>
-T DynamicArray<T>::pop_back() {
-    if (count == 0) {
-        throw std::underflow_error("DynamicArray has no items.");
-    }
-    T data = arr[count - 1];
-    count--;
-    return data;
-}
-
-// TODO: not implemented yet
-template <typename T>
-void DynamicArray<T>::resize() {
-    throw std::logic_error("DynamicArray::resize not implemented");
-}
-
-template <typename T>
-std::optional<T> DynamicArray<T>::front() const {
-    throw std::logic_error("DynamicArray::front not implemented");
-}
-
-template <typename T>
-std::optional<T> DynamicArray<T>::back() const {
-    throw std::logic_error("DynamicArray::back not implemented");
-}
-
-template <typename T>
-void DynamicArray<T>::clear() {
-    throw std::logic_error("DynamicArray::clear not implemented");
-}
