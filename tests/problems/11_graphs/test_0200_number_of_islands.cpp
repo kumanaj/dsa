@@ -21,3 +21,11 @@ TEST(NumberOfIslandsTest, Example2) {
 TEST(NumberOfIslandsTest, DiagonalIsNotConnected) {
     EXPECT_EQ(solve({{'1', '0'}, {'0', '1'}}), 2);
 }
+
+TEST(NumberOfIslandsTest, WideGrid) {
+    EXPECT_EQ(solve({{'1', '0', '1', '0', '1'}}), 3);
+}
+
+TEST(NumberOfIslandsTest, TallGrid) {
+    EXPECT_EQ(solve({{'1'}, {'0'}, {'1'}, {'0'}, {'1'}}), 3);
+}

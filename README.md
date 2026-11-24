@@ -7,7 +7,7 @@ C++17 data structures and LeetCode problems for interview practice, built with C
 | Area | Where | Progress |
 |---|---|---|
 | Data structures | [src/data_structures](./src/data_structures/README.md) | 3 / 14 done |
-| Blind 75 problems, grouped by NeetCode pattern | [src/problems](./src/problems/README.md) | 0 / 75 solved |
+| Blind 75 problems, grouped by NeetCode pattern | [src/problems](./src/problems/README.md) | 1 / 75 solved |
 
 Each area's README has the full checklist and how to run its tests.
 
