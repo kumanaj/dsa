@@ -19,12 +19,14 @@
 //              no repeated edges or self-loops; the graph is connected.
 // ----------------------------------------------------------------------------
 // My notes (fill in after solving):
-//   Approach:
-//   Time: O(?)   Space: O(?)
+//   Approach: clone node and add to map if it does not exist.
+//             then clone each neighbour.
+//   Time: O(V + E)   Space: O(V) for the map + recursion stack
 // ============================================================================
 
 #include <stdexcept>
 #include <vector>
+#include <unordered_map>
 
 namespace lc0133 {
 
@@ -40,9 +42,26 @@ public:
 
 class Solution {
 public:
-    // TODO: not implemented yet
+    Node* clone_node(Node* node, std::unordered_map<Node *, Node *>& clone_map) {
+        if (node == nullptr) return nullptr;
+
+        auto it = clone_map.find(node);
+        if (it != clone_map.end()) {
+            return it->second;
+        }
+
+        Node* cloned_node = new Node(node->val);
+        clone_map.emplace(node, cloned_node);
+        for (Node* neighbour : node->neighbors) {
+            Node* cloned_neighbour = clone_node(neighbour, clone_map);
+            cloned_node->neighbors.emplace_back(cloned_neighbour);
+        }
+        return cloned_node;
+    }
+
     Node* cloneGraph(Node* node) {
-        throw std::logic_error("lc0133::cloneGraph not implemented");
+        std::unordered_map<Node *, Node *> clone_map;
+        return clone_node(node, clone_map);
     }
 };
 
