@@ -16,20 +16,48 @@
 // Constraints: 1 <= n <= 2000; 0 <= edges.length <= 5000; no self-loops or repeated edges.
 // ----------------------------------------------------------------------------
 // My notes (fill in after solving):
-//   Approach:
-//   Time: O(?)   Space: O(?)
+//   Approach: Build an adjacency list, then perform DFS and see if n nodes are visited.
+//   Time: O(V + E) = O(n)   Space: O(V + E) = O(n) 
 // ============================================================================
 
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 
 namespace lc0261 {
 
 class Solution {
 public:
-    // TODO: not implemented yet
+    void dfs(std::vector<std::vector<int>>& adj_list, int source, std::vector<bool>& visited) {        
+        for (int neighbour : adj_list[source]) {
+            if (!visited[neighbour]) {
+                visited[neighbour] = true;
+                dfs(adj_list, neighbour, visited);
+            }
+        }
+    }
+
     bool validTree(int n, std::vector<std::vector<int>>& edges) {
-        throw std::logic_error("lc0261::validTree not implemented");
+        if (edges.size() != (size_t) (n - 1)) return false; // Tree has exactly n - 1 edges.
+
+        // Build adjacency list
+        std::vector<std::vector<int>> adj_list(n);
+        for (size_t i = 0; i < edges.size(); i++) {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            adj_list[u].push_back(v);
+            adj_list[v].push_back(u);
+        }
+
+        // DFS
+        std::vector<bool> visited(n, false); // faster than std::set!
+        int source_node = 0;
+        visited[source_node] = true;
+        dfs(adj_list, source_node, visited);
+
+        // check if visited nodes are equal to n
+        // faster might be to use int counter that is increased when visited.
+        return std::count(visited.begin(), visited.end(), true) == n;
     }
 };
 

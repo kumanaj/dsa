@@ -128,7 +128,7 @@ A stub throws until you write it, so a problem is solved when all its tests pass
 | ✅ | 133 | [Clone Graph](./11_graphs/0133_clone_graph.hpp) | Medium |
 | ⬜ | 417 | [Pacific Atlantic Water Flow](./11_graphs/0417_pacific_atlantic_water_flow.hpp) | Medium |
 | ⬜ | 207 | [Course Schedule](./11_graphs/0207_course_schedule.hpp) | Medium |
-| ⬜ | 261 | [Graph Valid Tree](./11_graphs/0261_graph_valid_tree.hpp) | Medium |
+| ✅ | 261 | [Graph Valid Tree](./11_graphs/0261_graph_valid_tree.hpp) | Medium |
 | ⬜ | 323 | [Number of Connected Components in an Undirected Graph](./11_graphs/0323_number_of_connected_components_in_an_undirected_graph.hpp) | Medium |
 
 ### 12 · Advanced Graphs
